@@ -9,11 +9,9 @@ TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
 # 🔹 Admin sahifasi va karta raqami
 ADMIN_URL = "https://t.me/Darkness_premium"
 ADMIN_CARD_NUMBER = "9860 0366 0913 7041"
-ADMIN_ID = 734940228
-GROUP_ID = -1002208256136
 
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(bot)
 
 # 📌 Asosiy menyu
 main_menu = types.ReplyKeyboardMarkup(
@@ -52,7 +50,7 @@ prices = {
     ]
 }
 
-# 📌 Narx tugmalarini yaratish (TO‘G‘RILANDI)
+# 📌 Narx tugmalarini yaratish
 def generate_price_buttons(service):
     buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
     buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")])
@@ -63,14 +61,21 @@ admin_button = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)]
 ])
 
-# 📌 Narx tanlanganda chiqadigan tugma
+# 📌 Narx tanlanganda qaytish tugmasi
 def back_to_prices_button(service):
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)],
         [InlineKeyboardButton(text="⬅️ Orqaga", callback_data=f"back_to_{service}")]
     ])
 
-@dp.message()
+# 📌 Narx tugmalari lug‘ati
+price_buttons = {
+    callback: (service, duration, price) 
+    for category in prices.values() 
+    for service, duration, price, callback in category
+}
+
+@dp.message_handler()
 async def handle_message(message: types.Message):
     """Foydalanuvchilarning xabarlarini qayta ishlash"""
     
@@ -83,7 +88,7 @@ async def handle_message(message: types.Message):
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
 
-@dp.callback_query()
+@dp.callback_query_handler()
 async def handle_callback(call: CallbackQuery):
     """Inline tugmalar orqali xizmatlarni tanlash"""
 
@@ -99,9 +104,6 @@ async def handle_callback(call: CallbackQuery):
     elif call.data.startswith("price_"):
         selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
-        for word in ["stars", "UC"]:
-            selected_duration = selected_duration.replace(word, "").strip()
-
         duration_text = f"⏳ *Davomiyligi:* {selected_duration}" if "Premium" in selected_service else f"📦 *Miqdori:* {selected_duration}"
 
         await call.message.edit_text(
@@ -109,7 +111,7 @@ async def handle_callback(call: CallbackQuery):
             f"{duration_text}\n"
             f"💰 *Narxi:* {selected_price}\n\n"
             f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
+            "📞 *To‘lov chekini adminga yuboring va tasdiqlashini kuting!*",
             reply_markup=back_to_prices_button(call.data.split("_")[1]),
             parse_mode="Markdown"
         )
@@ -120,10 +122,8 @@ async def handle_callback(call: CallbackQuery):
     await call.answer()
 
 async def main():
-    logging.info("Bot ishga tushdi!")
-
-    await dp.start_polling(bot)
+    logging.basicConfig(level=logging.INFO)
+    await dp.start_polling()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
