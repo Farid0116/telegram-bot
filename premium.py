@@ -149,7 +149,7 @@ async def handle_callback(call: CallbackQuery):
             parse_mode="Markdown"
         )
 
-    elif call.data == "back_to_main":
+elif call.data == "back_to_main":
     await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
 
 elif call.data == "back_to_services":
