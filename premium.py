@@ -82,7 +82,7 @@ price_buttons = {callback: (service, duration, price) for category in prices.val
 # 📌 Narx tugmalarini yaratish
 def generate_price_buttons(service):
     buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
-    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")])
+    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_services")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 # 📌 Admin bilan bog‘lanish tugmasi
@@ -149,34 +149,27 @@ async def handle_callback(call: CallbackQuery):
             parse_mode="Markdown"
         )
 
-    # 📌 Xizmat narxlariga qaytish (TO‘G‘RILANGAN QISM)
-    elif call.data.startswith("back_to_"):  # **BU YERDA `elif` bo‘lishi kerak edi!**
-        service = call.data.split("_")[-1]
+    elif call.data == "back_to_main":
+    await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
 
-        # Xizmat nomini to‘g‘ri chiqarish
+elif call.data == "back_to_services":
+    await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
+
+elif call.data.startswith("back_to_"): 
+    service = call.data.split("_", 2)[-1]  # Xizmat nomini olish
+    if service in prices:
         service_names = {
             "premium": "🚀 *Telegram Premium narxlari:*",
             "stars": "⭐ *Telegram Stars narxlari:*",
             "uc": "🎮 *PUBG UC narxlari:*"
         }
-
-        text = service_names.get(service, "📌 *Xizmat narxlari:*")  # Default text qo‘shildi
+        text = service_names.get(service, "📌 *Xizmat narxlari:*")  
         await call.message.edit_text(text, reply_markup=generate_price_buttons(service), parse_mode="Markdown")
-
-    # 📌 Xizmatlar menyusiga qaytish
-    elif call.data == "services_menu":
-        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
-
-    # 📌 Asosiy menyuga qaytish (⬅️ Orqaga tugmasi bosilganda)
-    elif call.data == "back_to_main":
-        await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
 
     await call.answer()
 
 async def main():
     logging.info("Bot ishga tushdi!")
-
-    dp.include_Router(bot)
 
     # 🔹 Xabar yuborish funksiyasini fon rejimida ishga tushirish
     asyncio.create_task(send_scheduled_message())
