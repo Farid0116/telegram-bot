@@ -167,6 +167,10 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "services_menu":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
+    # 📌 Asosiy menyuga qaytish (⬅️ Orqaga tugmasi bosilganda)
+    elif call.data == "back_to_main":
+        await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
+
     await call.answer()
 
 async def main():
