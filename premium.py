@@ -55,8 +55,7 @@ prices = {
 price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
 
 # 📌 Narx tugmalarini yaratish
-def generate_price_buttons(service): 
-    buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]] buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")]) return InlineKeyboardMarkup(inline_keyboard=buttons)
+def generate_price_buttons(service): buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]] buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")]) return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 # 📌 Admin bilan bog‘lanish tugmasi
 admin_button = InlineKeyboardMarkup(inline_keyboard=[
