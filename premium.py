@@ -12,14 +12,13 @@ ADMIN_CARD_NUMBER = "9860 0366 0913 7041"
 ADMIN_ID = 734940228
 GROUP_ID = -1002208256136
 
-
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 # 📌 Asosiy menyu
 main_menu = types.ReplyKeyboardMarkup(
     keyboard=[
-        [types.KeyboardButton(text="📌 Xizmatlar"),types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
+        [types.KeyboardButton(text="📌 Xizmatlar"), types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
         [types.KeyboardButton(text="✉️ Adminga murojaat xati")]
     ],
     resize_keyboard=True
@@ -33,7 +32,7 @@ services_menu = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
 ])
 
-# 📌 Har 10 daqiqada guruhga xabar yuborish funksiyasi
+# 📌 Guruhga har 10 daqiqada xabar yuborish funksiyasi
 async def send_scheduled_message():
     while True:
         try:
@@ -48,13 +47,12 @@ async def send_scheduled_message():
                 "✅ *Tezkor yuklab olish!*\n"
                 "✅ *Cheksiz imkoniyatlar!*\n\n"
             )
-
             await bot.send_message(GROUP_ID, text, parse_mode="Markdown")
         
         except Exception as e:
             logging.error(f"❌ Xatolik yuz berdi: {e}")
 
-        await asyncio.sleep(300)  # 10 daqiqa kutish
+        await asyncio.sleep(600)  # 10 daqiqa kutish
 
 # 📌 Narxlar ro‘yxati
 prices = {
@@ -65,24 +63,21 @@ prices = {
         ("🎁 Telegram Premium", "1 yil", "400,000 so‘m", "price_premium_1year")
     ],
     "stars": [
-        ("⭐ Telegram Stars", "50 stars", "15,000 so‘m", "price_stars_50"),
-        ("⭐ Telegram Stars", "100 stars", "30,000 so‘m", "price_stars_100"),
-        ("⭐ Telegram Stars", "500 stars", "115,000 so‘m", "price_stars_500")
+        ("⭐ Telegram Stars", "50", "15,000 so‘m", "price_stars_50"),
+        ("⭐ Telegram Stars", "100", "30,000 so‘m", "price_stars_100"),
+        ("⭐ Telegram Stars", "500", "115,000 so‘m", "price_stars_500")
     ],
     "uc": [
-        ("🎮 PUBG UC", "60 UC", "14,000 so‘m", "price_uc_60"),
-        ("🎮 PUBG UC", "325 UC", "65,000 so‘m", "price_uc_325"),
-        ("🎮 PUBG UC", "660 UC", "125,000 so‘m", "price_uc_660")
+        ("🎮 PUBG UC", "60", "14,000 so‘m", "price_uc_60"),
+        ("🎮 PUBG UC", "325", "65,000 so‘m", "price_uc_325"),
+        ("🎮 PUBG UC", "660", "125,000 so‘m", "price_uc_660")
     ]
 }
-
-# 📌 Narx callback ma’lumotlarini bog‘lash
-price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
 
 # 📌 Narx tugmalarini yaratish
 def generate_price_buttons(service):
     buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
-    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")])
+    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_services")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 # 📌 Admin bilan bog‘lanish tugmasi
@@ -115,7 +110,6 @@ async def handle_message(message: types.Message):
 async def handle_callback(call: CallbackQuery):
     """Inline tugmalar orqali xizmatlarni tanlash"""
 
-    # 📌 Xizmatlarni ko‘rsatish
     if call.data == "premium_service":
         await call.message.edit_text("🚀 *Telegram Premium narxlari:*", reply_markup=generate_price_buttons("premium"), parse_mode="Markdown")
     
@@ -125,55 +119,28 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "uc_service":
         await call.message.edit_text("🎮 *PUBG UC narxlari:*", reply_markup=generate_price_buttons("uc"), parse_mode="Markdown")
 
-    # 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
-    elif call.data.startswith("price_"):
-        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+    elif call.data == "back_to_main":
+        await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
 
-        # **"Star" va "UC" so‘zlarini olib tashlash**
-        for word in ["stars", "UC"]:
-            selected_duration = selected_duration.replace(word, "").strip()
+    elif call.data == "back_to_services":
+        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
-        # **Premium uchun "Davomiyligi", Stars va UC uchun "Miqdori" chiqarish**
-        if "Premium" in selected_service:
-            duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
-        else:
-            duration_text = f"📦 *Miqdori:* {selected_duration}"
-
-        await call.message.edit_text(
-            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-            f"{duration_text}\n"
-            f"💰 *Narxi:* {selected_price}\n\n"
-            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-            reply_markup=back_to_prices_button(call.data.split("_")[1]),
-            parse_mode="Markdown"
-        )
-
-    # 📌 Xizmat narxlariga qaytish (TO‘G‘RILANGAN QISM)
-    elif call.data.startswith("back_to_"):  # **BU YERDA `elif` bo‘lishi kerak edi!**
-        service = call.data.split("_")[-1]
-
-        # Xizmat nomini to‘g‘ri chiqarish
+    elif call.data.startswith("back_to_"):
+        service = call.data.split("_", 2)[-1]
         service_names = {
             "premium": "🚀 *Telegram Premium narxlari:*",
             "stars": "⭐ *Telegram Stars narxlari:*",
             "uc": "🎮 *PUBG UC narxlari:*"
         }
-
-        text = service_names.get(service, "📌 *Xizmat narxlari:*")  # Default text qo‘shildi
+        text = service_names.get(service, "📌 *Xizmat narxlari:*")
         await call.message.edit_text(text, reply_markup=generate_price_buttons(service), parse_mode="Markdown")
-
-    # 📌 Xizmatlar menyusiga qaytish
-    elif call.data == "services_menu":
-        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
     await call.answer()
 
 async def main():
     logging.info("Bot ishga tushdi!")
 
-    # 🔹 Xabar yuborish funksiyasini fon rejimida ishga tushirish
-    asyncio.create_task(send_scheduled_message())
+    asyncio.create_task(send_scheduled_message())  # Guruhga xabar yuborishni boshlash
     
     await dp.start_polling(bot)
 
