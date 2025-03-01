@@ -150,21 +150,21 @@ async def handle_callback(call: CallbackQuery):
         )
 
 elif call.data == "back_to_main":
-    await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
+        await call.message.edit_text("📌 *Siz asosiy menyudasiz!*", reply_markup=main_menu, parse_mode="Markdown")
 
-elif call.data == "back_to_services":
-    await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
+    elif call.data == "back_to_services":
+        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
-elif call.data.startswith("back_to_"): 
-    service = call.data.split("_", 2)[-1]  # Xizmat nomini olish
-    if service in prices:
-        service_names = {
-            "premium": "🚀 *Telegram Premium narxlari:*",
-            "stars": "⭐ *Telegram Stars narxlari:*",
-            "uc": "🎮 *PUBG UC narxlari:*"
-        }
-        text = service_names.get(service, "📌 *Xizmat narxlari:*")  
-        await call.message.edit_text(text, reply_markup=generate_price_buttons(service), parse_mode="Markdown")
+    elif call.data.startswith("back_to_"): 
+        service = call.data.split("_", 2)[-1]  # Xizmat nomini olish
+        if service in prices:
+            service_names = {
+                "premium": "🚀 *Telegram Premium narxlari:*",
+                "stars": "⭐ *Telegram Stars narxlari:*",
+                "uc": "🎮 *PUBG UC narxlari:*"
+            }
+            text = service_names.get(service, "📌 *Xizmat narxlari:*")  
+            await call.message.edit_text(text, reply_markup=generate_price_buttons(service), parse_mode="Markdown")
 
     await call.answer()
 
