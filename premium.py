@@ -85,12 +85,6 @@ def generate_price_buttons(service):
     buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
-# 📌 Admin bilan bog‘lanish tugmasi
-admin_button = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)],
-    [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
-])
-
 # 📌 Narx tanlanganda chiqadigan tugma
 def back_to_prices_button(service):
     return InlineKeyboardMarkup(inline_keyboard=[
