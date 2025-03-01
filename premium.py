@@ -11,7 +11,7 @@ ADMIN_URL = "https://t.me/Darkness_premium"
 ADMIN_CARD_NUMBER = "9860 0366 0913 7041"
 
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # 📌 Asosiy menyu
 main_menu = types.ReplyKeyboardMarkup(
