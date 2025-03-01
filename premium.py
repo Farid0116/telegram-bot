@@ -176,7 +176,7 @@ async def handle_callback(call: CallbackQuery):
 async def main():
     logging.info("Bot ishga tushdi!")
 
-    dp.include_router(bot)
+    dp.include_Router(bot)
 
     # 🔹 Xabar yuborish funksiyasini fon rejimida ishga tushirish
     asyncio.create_task(send_scheduled_message())
