@@ -41,22 +41,23 @@ prices = {
         ("🎁 Telegram Premium", "1 yil", "400,000 so‘m", "price_premium_1year")
     ],
     "stars": [
-        ("⭐ Telegram Stars", "50", "15,000 so‘m", "price_stars_50"),
-        ("⭐ Telegram Stars", "100", "30,000 so‘m", "price_stars_100"),
-        ("⭐ Telegram Stars", "500", "115,000 so‘m", "price_stars_500")
+        ("⭐ Telegram Stars", "50 stars", "15,000 so‘m", "price_stars_50"),
+        ("⭐ Telegram Stars", "100 stars", "30,000 so‘m", "price_stars_100"),
+        ("⭐ Telegram Stars", "500 stars", "115,000 so‘m", "price_stars_500")
     ],
     "uc": [
-        ("🎮 PUBG UC", "60", "14,000 so‘m", "price_uc_60"),
-        ("🎮 PUBG UC", "325", "65,000 so‘m", "price_uc_325"),
-        ("🎮 PUBG UC", "660", "125,000 so‘m", "price_uc_660")
+        ("🎮 PUBG UC", "60 UC", "14,000 so‘m", "price_uc_60"),
+        ("🎮 PUBG UC", "325 UC", "65,000 so‘m", "price_uc_325"),
+        ("🎮 PUBG UC", "660 UC", "125,000 so‘m", "price_uc_660")
     ]
 }
 
+price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
+
 # 📌 Narx tugmalarini yaratish
-def generate_price_buttons(service):
-    buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
-    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services-menu")])
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
+def generate_price_buttons(service): 
+    buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]] 
+    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")]) return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 # 📌 Admin bilan bog‘lanish tugmasi
 admin_button = InlineKeyboardMarkup(inline_keyboard=[
