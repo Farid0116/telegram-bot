@@ -15,10 +15,10 @@ ADMIN_ID = 734940228
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# 📌 Asosiy menyu
+# 📌 Asosiy menyu (2 ta ustunda chiqarish)
 main_menu = types.ReplyKeyboardMarkup(
     keyboard=[
-        [types.KeyboardButton(text="📌 Xizmatlar")], types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
+        [types.KeyboardButton(text="📌 Xizmatlar"), types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
         [types.KeyboardButton(text="✉️ Adminga murojaat xati")]
     ],
     resize_keyboard=True
