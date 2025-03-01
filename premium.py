@@ -123,6 +123,16 @@ async def show_payment_details(call: CallbackQuery):
         parse_mode="Markdown"
     )
 
+# 📌 "⬅️ Orqaga" tugmasi bosilganda xizmatlar menyusiga qaytarish
+@dp.callback_query(F.data.startswith("back_to_"))
+async def back_to_previous_menu(call: CallbackQuery):
+    service = call.data.replace("back_to_", "")
+    await call.message.edit_text(
+        "📌 *Xizmatlardan birini tanlang:*",
+        reply_markup=generate_price_buttons(service),
+        parse_mode="Markdown"
+    )
+
 # 📌 Orqaga tugmasi bosilganda xizmatlar menyusini qayta chiqarish
 @dp.callback_query(F.data == "services_menu")
 async def back_to_services(call: CallbackQuery):
