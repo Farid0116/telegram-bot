@@ -124,24 +124,24 @@ async def handle_callback(call: CallbackQuery):
             parse_mode="Markdown"
         )
 
-    # 📌 Xizmat narxlariga qaytish
-elif call.data.startswith("back_to_"):
-    service = call.data.split("_")[-1]
+    # 📌 Xizmat narxlariga qaytish (BU YERDA XATO BOR EDI, UNI TO‘G‘RILADIM)
+    elif call.data.startswith("back_to_"):
+        service = call.data.split("_")[-1]
 
-    # Xizmatga mos aniq matnni belgilaymiz
-    service_titles = {
-        "premium": "🚀 *Telegram Premium narxlari:*",
-        "stars": "⭐ *Telegram Stars narxlari:*",
-        "uc": "🎮 *PUBG UC narxlari:*",
-    }
-    
-    text = service_titles.get(service, "📌 *Xizmat narxlari:*")
+        # Xizmatga mos aniq matnni belgilaymiz
+        service_titles = {
+            "premium": "🚀 *Telegram Premium narxlari:*",
+            "stars": "⭐ *Telegram Stars narxlari:*",
+            "uc": "🎮 *PUBG UC narxlari:*",
+        }
 
-    await call.message.edit_text(
-        text,
-        reply_markup=generate_price_buttons(service),
-        parse_mode="Markdown"
-    )
+        text = service_titles.get(service, "📌 *Xizmat narxlari:*")
+
+        await call.message.edit_text(
+            text,
+            reply_markup=generate_price_buttons(service),
+            parse_mode="Markdown"
+        )
 
     # 📌 Xizmatlar menyusiga qaytish
     elif call.data == "services_menu":
