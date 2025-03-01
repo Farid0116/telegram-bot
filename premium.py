@@ -75,7 +75,7 @@ price_buttons = {
     for service, duration, price, callback in category
 }
 
-@dp.message_handler()
+@dp.message()
 async def handle_message(message: types.Message):
     """Foydalanuvchilarning xabarlarini qayta ishlash"""
     
@@ -88,7 +88,7 @@ async def handle_message(message: types.Message):
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
 
-@dp.callback_query_handler()
+@dp.callback_query()
 async def handle_callback(call: CallbackQuery):
     """Inline tugmalar orqali xizmatlarni tanlash"""
 
