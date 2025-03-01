@@ -18,8 +18,7 @@ dp = Dispatcher()
 # 📌 Asosiy menyu
 main_menu = types.ReplyKeyboardMarkup(
     keyboard=[
-        [types.KeyboardButton(text="📌 Xizmatlar")],
-        [types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
+        [types.KeyboardButton(text="📌 Xizmatlar")], types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
         [types.KeyboardButton(text="✉️ Adminga murojaat xati")]
     ],
     resize_keyboard=True
@@ -79,7 +78,7 @@ def back_to_prices_button(service):
 @dp.message()
 async def handle_message(message: types.Message):
     if message.text == "/start":
-        await message.answer("👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode = "Markdown")
+        await message.answer("👋 Assalomu alaykum!\n\n📌 Xizmatlar*ni ko‘rish yoki 👨‍💼 admin bilan bog‘lanish uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode = "Markdown")
 
     elif message.text == "📌 Xizmatlar":
         await message.answer("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
