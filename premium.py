@@ -79,7 +79,7 @@ def back_to_prices_button(service):
 @dp.message()
 async def handle_message(message: types.Message):
     if message.text == "/start":
-        await message.answer("👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", reply_markup=main_menu)
+        await message.answer("👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode = "Markdown")
 
     elif message.text == "📌 Xizmatlar":
         await message.answer("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
@@ -125,9 +125,23 @@ async def handle_callback(call: CallbackQuery):
         )
 
     # 📌 Xizmat narxlariga qaytish
-    elif call.data.startswith("back_to_"):
-        service = call.data.split("_")[-1]
-        await call.message.edit_text(f"📌 *{service.capitalize()} narxlari:*", reply_markup=generate_price_buttons(service), parse_mode="Markdown")
+elif call.data.startswith("back_to_"):
+    service = call.data.split("_")[-1]
+
+    # Xizmatga mos aniq matnni belgilaymiz
+    service_titles = {
+        "premium": "🚀 *Telegram Premium narxlari:*",
+        "stars": "⭐ *Telegram Stars narxlari:*",
+        "uc": "🎮 *PUBG UC narxlari:*",
+    }
+    
+    text = service_titles.get(service, "📌 *Xizmat narxlari:*")
+
+    await call.message.edit_text(
+        text,
+        reply_markup=generate_price_buttons(service),
+        parse_mode="Markdown"
+    )
 
     # 📌 Xizmatlar menyusiga qaytish
     elif call.data == "services_menu":
