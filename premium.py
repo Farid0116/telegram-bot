@@ -24,10 +24,10 @@ main_menu = types.ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-# 📌 Xizmatlar menyusi
+# 📌 Xizmatlar menyusi (1 ustun)
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service"),
-     InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
+    [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service")],
+    [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
     [InlineKeyboardButton(text="🎮 PUBG UC", callback_data="uc_service")],
     [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
 ])
