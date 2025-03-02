@@ -127,26 +127,27 @@ async def handle_callback(call: CallbackQuery):
         await call.message.edit_text("⚽ *Efootball narxlari:*", reply_markup=generate_price_buttons("efootball"), parse_mode="Markdown")
     
     # ❌ XATO SHU YERDA BO‘LGAN
-    elif call.data.startswith("price_"):  
-    selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+elif call.data.startswith("price_"):  
+        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
-    # ✅ Agar Telegram Premium bo'lsa, davomiylik chiqariladi
-    if "Premium" in selected_service:
-        duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
-    else:
-        # ✅ Raqam oldida "Stars", "UC", "Coin" bo‘lmasligi kerak
-        cleaned_duration = ''.join(filter(str.isdigit, selected_duration))  # Faqat raqamlarni ajratib olish
-        duration_text = f"📦 *Miqdori:* {cleaned_duration}"  
+        # ✅ Agar Telegram Premium bo'lsa, davomiylik chiqariladi
+        if "Premium" in selected_service:
+            duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
+        else:
+            # ✅ Raqam oldida "Stars", "UC", "Coin" bo‘lmasligi kerak
+            cleaned_duration = ''.join(filter(str.isdigit, selected_duration))  # Faqat raqamlarni ajratib olish
+            duration_text = f"📦 *Miqdori:* {cleaned_duration}"  
 
-    await call.message.edit_text(
-        f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-        f"{duration_text}\n"
-        f"💰 *Narxi:* {selected_price}\n\n"
-        f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-        "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-        reply_markup=back_to_prices_button(call.data.split("_")[1]),
-        parse_mode="Markdown"
-    )
+        await call.message.edit_text(
+            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
+            f"{duration_text}\n"
+            f"💰 *Narxi:* {selected_price}\n\n"
+            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
+            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
+            reply_markup=back_to_prices_button(call.data.split("_")[1]),
+            parse_mode="Markdown"
+        )
+
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
 
