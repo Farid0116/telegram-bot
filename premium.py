@@ -2,7 +2,6 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from aiogram.filters import Command
 
 # 🔑 Bot tokeni
 TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
@@ -99,19 +98,13 @@ def back_to_prices_button(service):
         [InlineKeyboardButton(text="⬅️ Orqaga", callback_data=f"back_to_{service}")]
     ])
 
-# 📌 `/start` buyruğini qayta ishlash
-@dp.message(Command("start"))
-async def start_command(message: types.Message):
-    await message.answer(
-        "👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", 
-        reply_markup=main_menu,  
-        parse_mode="Markdown"
-    )
-
 # 📌 Foydalanuvchilarning xabarlarini qayta ishlash
 @dp.message()
 async def handle_message(message: types.Message):
-    if message.text == "📌 Xizmatlar":
+    if message.text == "/start":
+        await message.answer("👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode="Markdown")
+
+    elif message.text == "📌 Xizmatlar":
         await message.answer("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
@@ -171,10 +164,6 @@ async def handle_callback(call: CallbackQuery):
             reply_markup=generate_price_buttons(service),
             parse_mode="Markdown"
         )
-
-    elif call.data == "back_to_main":  # "⬅️ Orqaga" bosilganda `/start` ni chaqiramiz
-        await start_command(call.message)  # `/start` funksiyasini chaqirish
-        await call.answer()
 
     elif call.data == "services_menu":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
