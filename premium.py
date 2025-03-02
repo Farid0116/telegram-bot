@@ -147,6 +147,14 @@ async def handle_callback(call: CallbackQuery):
             parse_mode="Markdown"
         )
 
+    # 🔹 Asosiy menyuga qaytish tugmasi ishlashi uchun
+    if call.data == "back_to_main":
+        await call.message.edit_text(
+            "👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", 
+            reply_markup=main_menu,  
+            parse_mode="Markdown"
+        )
+
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
 
