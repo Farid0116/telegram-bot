@@ -64,6 +64,7 @@ def generate_price_buttons(service):
 # 📌 Admin bilan bog‘lanish tugmasi
 admin_button = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")]
+    ])
 
 # 📌 Narx tanlanganda chiqadigan tugma
 def back_to_prices_button(service):
