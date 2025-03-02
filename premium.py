@@ -158,7 +158,7 @@ async def handle_callback(call: CallbackQuery):
     await call.answer()  # ❗ CallBack tugmani bosganda "kutilmoqda..." holatini yo‘qotish uchun
 
 
-    elif call.data.startswith("back_to_"):
+    if call.data.startswith("back_to_"):
         service = call.data.replace("back_to_", "")  # ❗ To‘g‘ri service nomini olish uchun
 
         service_titles = {
