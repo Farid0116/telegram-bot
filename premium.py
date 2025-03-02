@@ -131,12 +131,6 @@ async def handle_callback(call: CallbackQuery):
 
     elif call.data == "efootball_service":  # ✅ Yangi qo‘shildi
         await call.message.edit_text("⚽ *Efootball narxlari:*", reply_markup=generate_price_buttons("efootball"), parse_mode="Markdown")
-
-    elif call.data == "back_to_main":  # "⬅️ Orqaga" bosilganda `/start` ni chaqiramiz
-        await start_command(call.message)  # `/start` funksiyasini chaqirish
-        await call.answer()
-    else:
-        await call.answer("Xizmat yuklanmoqda...")
     
     elif call.data.startswith("price_"):  
         selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
@@ -176,6 +170,12 @@ async def handle_callback(call: CallbackQuery):
             reply_markup=generate_price_buttons(service),
             parse_mode="Markdown"
         )
+
+    elif call.data == "back_to_main":  # "⬅️ Orqaga" bosilganda `/start` ni chaqiramiz
+        await start_command(call.message)  # `/start` funksiyasini chaqirish
+        await call.answer()
+    else:
+        await call.answer("Xizmat yuklanmoqda...")
 
     elif call.data == "services_menu":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
