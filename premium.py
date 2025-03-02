@@ -168,6 +168,13 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "services_menu":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
+    elif call.data == "back_to_main":
+        await call.message.edit_text(
+            "👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:",
+            reply_markup=main_menu,
+            parse_mode="Markdown"
+        )
+
     await call.answer()
 
 # 📌 Botni ishga tushirish
