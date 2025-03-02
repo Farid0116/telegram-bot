@@ -63,9 +63,7 @@ def generate_price_buttons(service):
 
 # 📌 Admin bilan bog‘lanish tugmasi
 admin_button = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)],
-    [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
-])
+    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")]
 
 # 📌 Narx tanlanganda chiqadigan tugma
 def back_to_prices_button(service):
@@ -103,25 +101,26 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "back_to_main":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
-    # 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
-    elif call.data.startswith("price_"):
-        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+# 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
+elif call.data.startswith("price_"):
+    selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
-        # **Premium uchun "Davomiyligi", Stars va UC uchun "Miqdori" chiqarish**
-        if "Premium" in selected_service:
-            duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
-        else:
-            duration_text = f"📦 *Miqdori:* {selected_duration}"
+    # **Agar xizmat Telegram Premium bo‘lsa, "Davomiyligi" yozuvi chiqadi, aks holda faqat raqam qismi qoladi**
+    if "Premium" in selected_service:
+        duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
+    else:
+        # Stars va UC uchun faqat raqam qismi qoldiriladi
+        duration_text = f"{selected_duration.split()[0]}"
 
-        await call.message.edit_text(
-            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-            f"{duration_text}\n"
-            f"💰 *Narxi:* {selected_price}\n\n"
-            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-            reply_markup=back_to_prices_button(call.data.split("_")[1]),
-            parse_mode="Markdown"
-        )
+    await call.message.edit_text(
+        f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
+        f"📦 *Miqdori:* {duration_text}\n"
+        f"💰 *Narxi:* {selected_price}\n\n"
+        f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
+        "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
+        reply_markup=back_to_prices_button(call.data.split("_")[1]),
+        parse_mode="Markdown"
+    )
 
     # 📌 Xizmat narxlariga qaytish (BU YERDA XATO BOR EDI, UNI TO‘G‘RILADIM)
     elif call.data.startswith("back_to_"):
