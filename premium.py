@@ -29,6 +29,7 @@ services_menu = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service")],
     [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
     [InlineKeyboardButton(text="🎮 PUBG UC", callback_data="uc_service")],
+    [InlineKeyboardButton(text="⚽ Efootball", callback_data="efootball_service")],  # Yangi qo‘shildi
     [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
 ])
 
@@ -49,8 +50,32 @@ prices = {
         ("🎮 PUBG UC", "60 UC", "15,000 so‘m", "price_uc_60"),
         ("🎮 PUBG UC", "325 UC", "65,000 so‘m", "price_uc_325"),
         ("🎮 PUBG UC", "660 UC", "125,000 so‘m", "price_uc_660")
+    ],
+    "efootball": [  # ✅ Yangi xizmat qo‘shildi
+        ("⚽ Efootball", "130 coin", "17,000 so‘m", "price_efootball_130"),
+        ("⚽ Efootball", "260 coin ", "34,000 so‘m", "price_efootball_260"),
+        ("⚽ Efootball", "300 coin", "36,000 so‘m", "price_efootball_300"),
+        ("⚽ Efootball", "430 coin", "52,000 so‘m", "price_efootball_430"),
+        ("⚽ Efootball", "550 coin ", "62,000 so‘m", "price_efootball_550"),
+        ("⚽ Efootball", "600 coin", "72,000 so‘m", "price_efootball_600"),
+        ("⚽ Efootball", "750 coin", "81,000 so‘m", "price_efootball_750"),
+        ("⚽ Efootball", "850 coin", "97,000 so‘m", "price_efootball_850"),
+        ("⚽ Efootball", "900 coin", "105,000 so‘m", "price_efootball_900"),
+        ("⚽ Efootball", "1040 coin", "113,000 so‘m", "price_efootball_1040"),
+        ("⚽ Efootball", "1100 coin", "124,000 so‘m", "price_efootball_1100"),
+        ("⚽ Efootball", "1300 coin", "143,000 so‘m", "price_efootball_1300"),
+        ("⚽ Efootball", "1400 coin", "159,000 so‘m", "price_efootball_1400"),
+        ("⚽ Efootball", "1590 coin", "171,000 so‘m", "price_efootball_1590"),
+        ("⚽ Efootball", "1600 coin", "209,000 so‘m", "price_efootball_1600"),
+        ("⚽ Efootball", "2130 coin", "220,000 so‘m", "price_efootball_2130"),
+        ("⚽ Efootball", "3250 coin", "325,000 so‘m", "price_efootball_3250"),
+        ("⚽ Efootball", "5700 coin", "525,000 so‘m", "price_efootball_5700"),
+        ("⚽ Efootball", "12800 coin", "1,157,000 so‘m", "price_efootball_12800"),
     ]
 }
+
+# 📌 Narx callback ma’lumotlarini bog‘lash
+price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
 
 # 📌 Narx callback ma’lumotlarini bog‘lash
 price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
@@ -98,25 +123,28 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "uc_service":
         await call.message.edit_text("🎮 *PUBG UC narxlari:*", reply_markup=generate_price_buttons("uc"), parse_mode="Markdown")
 
+    elif call.data == "efootball_service":  # ✅ Yangi qo‘shildi
+        await call.message.edit_text("⚽ *Efootball narxlari:*", reply_markup=generate_price_buttons("efootball"), parse_mode="Markdown")
+        
     # 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
-    elif call.data.startswith("price_"):
-        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+elif call.data.startswith("price_"):
+    selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
-        # **Stars va UC xizmatlaridan "stars" va "UC" so‘zlarini olib tashlash**
-        for word in ["stars", "UC"]:
-            selected_duration = selected_duration.replace(word, "").strip()
+    # ✅ Miqdor formati (Premium uchun davomiylik, boshqa xizmatlar uchun faqat raqam)
+    if "Premium" in selected_service:
+        duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
+    else:
+        duration_text = f"📦 *Miqdori:* {selected_duration}"  # ❗️ Raqam oldida faqat "📦 Miqdori" chiqadi
 
-        duration_text = f"⏳ *Davomiyligi:* {selected_duration}" if "Premium" in selected_service else f"📦 *Miqdori:* {selected_duration}"
-
-        await call.message.edit_text(
-            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-            f"{duration_text}\n"
-            f"💰 *Narxi:* {selected_price}\n\n"
-            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-            reply_markup=back_to_prices_button(call.data.split("_")[1]),
-            parse_mode="Markdown"
-        )
+    await call.message.edit_text(
+        f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
+        f"{duration_text}\n"
+        f"💰 *Narxi:* {selected_price}\n\n"
+        f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
+        "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
+        reply_markup=back_to_prices_button(call.data.split("_")[1]),
+        parse_mode="Markdown"
+    )
 
     # 📌 Xizmat narxlariga qaytish
     elif call.data.startswith("back_to_"):
