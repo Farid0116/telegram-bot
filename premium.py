@@ -26,8 +26,8 @@ main_menu = types.ReplyKeyboardMarkup(
 
 # 📌 Xizmatlar menyusi
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service")],
-    [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
+    [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service"),
+     InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
     [InlineKeyboardButton(text="🎮 PUBG UC", callback_data="uc_service")],
     [InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_to_main")]
 ])
@@ -63,8 +63,8 @@ def generate_price_buttons(service):
 
 # 📌 Admin bilan bog‘lanish tugmasi
 admin_button = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")]
-    ])
+    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)]
+])
 
 # 📌 Narx tanlanganda chiqadigan tugma
 def back_to_prices_button(service):
@@ -77,7 +77,7 @@ def back_to_prices_button(service):
 @dp.message()
 async def handle_message(message: types.Message):
     if message.text == "/start":
-        await message.answer("👋 Assalomu alaykum!\n\n📌 Xizmatlarni ko‘rish yoki 👨‍💼 admin bilan bog‘lanish uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode="Markdown")
+        await message.answer("👋 Assalomu alaykum!\n\n📌 *Xizmatlar*ni ko‘rish yoki 👨‍💼 *admin bilan bog‘lanish* uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode="Markdown")
 
     elif message.text == "📌 Xizmatlar":
         await message.answer("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
@@ -98,40 +98,34 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "uc_service":
         await call.message.edit_text("🎮 *PUBG UC narxlari:*", reply_markup=generate_price_buttons("uc"), parse_mode="Markdown")
 
-    # 📌 Xizmatlar menyusiga qaytish
-    elif call.data == "back_to_main":
-        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
+    # 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
+    elif call.data.startswith("price_"):
+        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
-# 📌 Narx tanlanganda to‘lov ma’lumoti chiqadi
-elif call.data.startswith("price_"):
-    selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+        # **Stars va UC xizmatlaridan "stars" va "UC" so‘zlarini olib tashlash**
+        for word in ["stars", "UC"]:
+            selected_duration = selected_duration.replace(word, "").strip()
 
-    # **Agar xizmat Telegram Premium bo‘lsa, "Davomiyligi" yozuvi chiqadi, aks holda faqat raqam qismi qoladi**
-    if "Premium" in selected_service:
-        duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
-    else:
-        # Stars va UC uchun faqat raqam qismi qoldiriladi
-        duration_text = f"{selected_duration.split()[0]}"
+        duration_text = f"⏳ *Davomiyligi:* {selected_duration}" if "Premium" in selected_service else f"📦 *Miqdori:* {selected_duration}"
 
-    await call.message.edit_text(
-        f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-        f"📦 *Miqdori:* {duration_text}\n"
-        f"💰 *Narxi:* {selected_price}\n\n"
-        f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-        "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-        reply_markup=back_to_prices_button(call.data.split("_")[1]),
-        parse_mode="Markdown"
-    )
+        await call.message.edit_text(
+            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
+            f"{duration_text}\n"
+            f"💰 *Narxi:* {selected_price}\n\n"
+            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
+            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
+            reply_markup=back_to_prices_button(call.data.split("_")[1]),
+            parse_mode="Markdown"
+        )
 
-    # 📌 Xizmat narxlariga qaytish (BU YERDA XATO BOR EDI, UNI TO‘G‘RILADIM)
+    # 📌 Xizmat narxlariga qaytish
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
 
-        # Xizmatga mos aniq matnni belgilaymiz
         service_titles = {
             "premium": "🚀 *Telegram Premium narxlari:*",
             "stars": "⭐ *Telegram Stars narxlari:*",
-            "uc": "🎮 *PUBG UC narxlari:*",
+            "uc": "🎮 *PUBG UC narxlari:*"
         }
 
         text = service_titles.get(service, "📌 *Xizmat narxlari:*")
@@ -142,7 +136,6 @@ elif call.data.startswith("price_"):
             parse_mode="Markdown"
         )
 
-    # 📌 Xizmatlar menyusiga qaytish
     elif call.data == "services_menu":
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
