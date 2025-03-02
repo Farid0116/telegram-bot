@@ -147,7 +147,6 @@ async def handle_callback(call: CallbackQuery):
         reply_markup=back_to_prices_button(call.data.split("_")[1]),
         parse_mode="Markdown"
     )
-
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
 
