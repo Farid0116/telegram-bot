@@ -126,8 +126,7 @@ async def handle_callback(call: CallbackQuery):
     elif call.data == "efootball_service":  # ✅ Yangi qo‘shildi
         await call.message.edit_text("⚽ *Efootball narxlari:*", reply_markup=generate_price_buttons("efootball"), parse_mode="Markdown")
     
-    # ❌ XATO SHU YERDA BO‘LGAN
-elif call.data.startswith("price_"):  
+    elif call.data.startswith("price_"):  
         selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
 
         # ✅ Agar Telegram Premium bo'lsa, davomiylik chiqariladi
