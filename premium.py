@@ -13,7 +13,7 @@ ADMIN_ID = 734940228
 
 # 🔹 Bot va dispatcher yaratish
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(bot)
 
 # 📌 Asosiy menyu (2 ta ustunda chiqarish)
 main_menu = types.ReplyKeyboardMarkup(
