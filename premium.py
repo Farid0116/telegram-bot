@@ -110,7 +110,7 @@ async def handle_message(message: types.Message):
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
 
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
-@dp.callback_query()
+@dp.callback_query_handler()
 async def handle_callback(call: CallbackQuery):
     # 📌 Xizmatlarni ko‘rsatish
     if call.data == "premium_service":
