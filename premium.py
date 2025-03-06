@@ -98,7 +98,7 @@ def back_to_prices_button(service):
     ])
 
 # 📌 Foydalanuvchilarning xabarlarini qayta ishlash
-@dp.message()
+@dp.message_handler()
 async def handle_message(message: types.Message):
     if message.text == "/start":
         await message.answer("👋 Assalomu alaykum!\n\n📌 Xizmatlarni ko‘rish yoki 👨‍💼 admin bilan bog‘lanish uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode="Markdown")
