@@ -133,6 +133,12 @@ async def admin_panel_handler(message: types.Message):
     else:
         await message.answer("⛔ Siz admin emassiz!")
 
+# 📌 Har bir xabarni sanash
+@dp.message_handler()
+async def count_messages(message: types.Message):
+    global message_count
+    user_data.add(message.from_user.id)
+    message_count += 1
 
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
 @dp.callback_query_handler()
