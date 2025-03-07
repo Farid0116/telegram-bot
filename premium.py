@@ -2,7 +2,6 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from aiogram.dispatcher.filters import Command
 
 # 🔑 Bot tokeni
 TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
@@ -125,7 +124,7 @@ async def handle_message(message: types.Message):
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
 
 # 📌 /admin buyrug‘i - Faqat admin ko‘ra oladi
-@dp.message_handler(Command("admin"))
+@dp.message_handler(commands=["admin"])
 async def admin_panel_handler(message: types.Message):
     if message.from_user.id == ADMIN_ID:
         await message.answer("🛠 *Admin paneliga xush kelibsiz!*", reply_markup=admin_panel, parse_mode="Markdown")
