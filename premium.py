@@ -170,7 +170,7 @@ async def handle_callback(call: CallbackQuery):
         )
 
         # 📌 Admin paneli tugmalari uchun handler
-@dp.callback_query()
+@dp.callback_query_handler()
 async def handle_admin_callbacks(call: CallbackQuery):
     if call.data == "show_stats":
         stats_text = await get_statistics()
@@ -179,8 +179,6 @@ async def handle_admin_callbacks(call: CallbackQuery):
     elif call.data == "update_stats":
         stats_text = await get_statistics()
         await call.message.edit_text("♻ *Statistika yangilandi!*\n\n" + stats_text, reply_markup=admin_panel, parse_mode="Markdown")
-
-    await call.answer()
 
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
@@ -205,8 +203,8 @@ async def handle_admin_callbacks(call: CallbackQuery):
 
     await call.answer()
 
-    # 📌 Har bir xabarni sanash
-@dp.message()
+# 📌 Har bir xabarni sanash
+@dp.message_handler()
 async def count_messages(message: types.Message):
     global message_count
     user_data.add(message.from_user.id)
