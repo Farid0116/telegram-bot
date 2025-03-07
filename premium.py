@@ -2,6 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.dispatcher.filters import Command
 
 # 🔑 Bot tokeni
 TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
@@ -181,13 +182,6 @@ async def handle_admin_callbacks(call: CallbackQuery):
 
     await call.answer()
 
-    # 📌 Har bir xabarni sanash
-@dp.message()
-async def count_messages(message: types.Message):
-    global message_count
-    user_data.add(message.from_user.id)
-    message_count += 1
-
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
 
@@ -210,6 +204,13 @@ async def count_messages(message: types.Message):
         await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
 
     await call.answer()
+
+    # 📌 Har bir xabarni sanash
+@dp.message()
+async def count_messages(message: types.Message):
+    global message_count
+    user_data.add(message.from_user.id)
+    message_count += 1
 
 # 📌 Botni ishga tushirish
 async def main():
