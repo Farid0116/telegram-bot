@@ -212,6 +212,7 @@ async def count_messages(message: types.Message):
 
 # 📌 Botni ishga tushirish
 async def main():
+    print("DISPATCHER ISHLADI!")  # Terminalda chiqishi kerak
     logging.info("Bot ishga tushdi!")
     await dp.start_polling(bot)
 
