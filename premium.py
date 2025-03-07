@@ -15,14 +15,27 @@ ADMIN_ID = 734940228
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+# 📌 Foydalanuvchilar va xabarlar statistikasi
+user_data = set()  # Unikal foydalanuvchilarni saqlash
+message_count = 0  # Jami xabarlar soni
+
 # 📌 Asosiy menyu (2 ta ustunda chiqarish)
 main_menu = types.ReplyKeyboardMarkup(
     keyboard=[
-        [types.KeyboardButton(text="📌 Xizmatlar"), types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")],
-        [types.KeyboardButton(text="✉️ Adminga murojaat xati")]
+        [types.KeyboardButton(text="📌 Xizmatlar"), types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")]
     ],
     resize_keyboard=True
 )
+
+# 📌 Admin paneli inline tugmalar
+admin_panel = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="📊 Statistika", callback_data="show_stats")],
+    [InlineKeyboardButton(text="🔄 Yangilash", callback_data="update_stats")]
+])
+
+# 📌 Statistika olish funksiyasi
+async def get_statistics():
+    return f"📊 *Statistika:*\n👥 Jami foydalanuvchilar: {len(user_data)}\n✉
 
 # 📌 Xizmatlar menyusi (1 ustun)
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
@@ -109,6 +122,14 @@ async def handle_message(message: types.Message):
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
 
+# 📌 /admin buyrug‘i - Faqat admin ko‘ra oladi
+@dp.message_handler(Command("admin"))
+async def admin_panel_handler(message: types.Message):
+    if message.from_user.id == ADMIN_ID:
+        await message.answer("🛠 *Admin paneliga xush kelibsiz!*", reply_markup=admin_panel, parse_mode="Markdown")
+    else:
+        await message.answer("⛔ Siz admin emassiz!")
+
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
 @dp.callback_query_handler()
 async def handle_callback(call: CallbackQuery):
@@ -145,6 +166,26 @@ async def handle_callback(call: CallbackQuery):
             reply_markup=back_to_prices_button(call.data.split("_")[1]),
             parse_mode="Markdown"
         )
+
+        # 📌 Admin paneli tugmalari uchun handler
+@dp.callback_query()
+async def handle_admin_callbacks(call: CallbackQuery):
+    if call.data == "show_stats":
+        stats_text = await get_statistics()
+        await call.message.edit_text(stats_text, reply_markup=admin_panel, parse_mode="Markdown")
+
+    elif call.data == "update_stats":
+        stats_text = await get_statistics()
+        await call.message.edit_text("♻ *Statistika yangilandi!*\n\n" + stats_text, reply_markup=admin_panel, parse_mode="Markdown")
+
+    await call.answer()
+
+    # 📌 Har bir xabarni sanash
+@dp.message()
+async def count_messages(message: types.Message):
+    global message_count
+    user_data.add(message.from_user.id)
+    message_count += 1
 
     elif call.data.startswith("back_to_"):
         service = call.data.split("_")[-1]
