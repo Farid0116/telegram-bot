@@ -35,7 +35,8 @@ admin_panel = InlineKeyboardMarkup(inline_keyboard=[
 
 # 📌 Statistika olish funksiyasi
 async def get_statistics():
-    return f"📊 *Statistika:*\n👥 Jami foydalanuvchilar: {len(user_data)}\n✉
+    return f"📊 *Statistika:*\n👥 Jami foydalanuvchilar: {len(user_data)}\n✉️ Jami xabarlar: {message_count}"
+
 
 # 📌 Xizmatlar menyusi (1 ustun)
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
