@@ -198,9 +198,9 @@ async def handle_admin_callbacks(call: CallbackQuery):
     if call.data == "show_stats":
         stats_text = await get_statistics()
     elif call.data == "update_stats":
-         stats_text = "♻ *Statistika yangilandi!*\n\n" + await get_statistics()
-       
-  await call.message.edit_text(stats_text, reply_markup=admin_panel, parse_mode="Markdown")
+        stats_text = "♻ *Statistika yangilandi!*\n\n" + await get_statistics()
+
+    await call.message.edit_text(stats_text, reply_markup=admin_panel, parse_mode="Markdown")
     await call.answer()
 
 # 📌 Har bir xabarni sanash
