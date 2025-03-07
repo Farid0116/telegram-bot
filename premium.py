@@ -2,7 +2,6 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from aiogram.dispatcher.filters import Command
 
 # 🔑 Bot tokeni
 TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
@@ -16,10 +15,6 @@ ADMIN_ID = 734940228
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
-# 📌 Foydalanuvchilar va xabarlar statistikasi
-user_data = set()  # Unikal foydalanuvchilarni saqlash
-message_count = 0  # Jami xabarlar soni
-
 # 📌 Asosiy menyu (2 ta ustunda chiqarish)
 main_menu = types.ReplyKeyboardMarkup(
     keyboard=[
@@ -27,17 +22,6 @@ main_menu = types.ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
-
-# 📌 Admin paneli inline tugmalar
-admin_panel = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="📊 Statistika", callback_data="show_stats")],
-    [InlineKeyboardButton(text="🔄 Yangilash", callback_data="update_stats")]
-])
-
-# 📌 Statistika olish funksiyasi
-async def get_statistics():
-    return f"📊 *Statistika:*\n👥 Jami foydalanuvchilar: {len(user_data)}\n✉️ Jami xabarlar: {message_count}"
-
 
 # 📌 Xizmatlar menyusi (1 ustun)
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
@@ -91,9 +75,6 @@ prices = {
 # 📌 Narx callback ma’lumotlarini bog‘lash
 price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
 
-# 📌 Narx callback ma’lumotlarini bog‘lash
-price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
-
 # 📌 Narx tugmalarini yaratish
 def generate_price_buttons(service):
     buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
@@ -123,22 +104,6 @@ async def handle_message(message: types.Message):
 
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
-
-# 📌 /admin buyrug‘i - Faqat admin ko‘ra oladi
-@dp.message_handler(commands=["admin"])
-async def admin_panel_handler(message: types.Message):
-    print(f"ADMIN BUYRUG‘I KELDI: {message.from_user.id}")  # Terminalda ko‘rish uchun
-    if message.from_user.id == ADMIN_ID:
-        await message.answer("🛠 *Admin paneliga xush kelibsiz!*", parse_mode="Markdown")
-    else:
-        await message.answer("⛔ Siz admin emassiz!")
-
-# 📌 Har bir xabarni sanash
-@dp.message_handler()
-async def count_messages(message: types.Message):
-    global message_count
-    user_data.add(message.from_user.id)
-    message_count += 1
 
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
 @dp.callback_query_handler()
@@ -200,29 +165,11 @@ async def handle_callback(call: CallbackQuery):
 
     await call.answer()
 
-        # 📌 Admin paneli tugmalari uchun handler
-@dp.callback_query_handler(lambda call: call.data in ["show_stats", "update_stats"])
-async def handle_admin_callbacks(call: CallbackQuery):
-    if call.data == "show_stats":
-        stats_text = await get_statistics()
-    elif call.data == "update_stats":
-        stats_text = "♻ *Statistika yangilandi!*\n\n" + await get_statistics()
-
-    await call.message.edit_text(stats_text, reply_markup=admin_panel, parse_mode="Markdown")
-    await call.answer()
-
-# 📌 Har bir xabarni sanash
-@dp.message_handler()
-async def count_messages(message: types.Message):
-    global message_count
-    user_data.add(message.from_user.id)
-    message_count += 1
-
 # 📌 Botni ishga tushirish
 async def main():
     print("DISPATCHER ISHLADI!")  # Terminalda chiqishi kerak
     logging.info("Bot ishga tushdi!")
-    await dp.start_polling(bot)
+    await dp.start_polling()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
