@@ -127,10 +127,12 @@ async def handle_message(message: types.Message):
 # 📌 /admin buyrug‘i - Faqat admin ko‘ra oladi
 @dp.message_handler(commands=["admin"])
 async def admin_panel_handler(message: types.Message):
+    print(f"ADMIN BUYRUG‘I KELDI: {message.from_user.id}")  # Terminalda ko‘rish uchun
     if message.from_user.id == ADMIN_ID:
-        await message.answer("🛠 *Admin paneliga xush kelibsiz!*", reply_markup=admin_panel, parse_mode="Markdown")
+        await message.answer("🛠 *Admin paneliga xush kelibsiz!*", parse_mode="Markdown")
     else:
         await message.answer("⛔ Siz admin emassiz!")
+
 
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
 @dp.callback_query_handler()
