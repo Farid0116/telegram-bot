@@ -23,6 +23,11 @@ main_menu = types.ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+# 📌 Pastki menyu (ReplyKeyboardMarkup) - faqat /start va /help
+bottom_menu = ReplyKeyboardMarkup(resize_keyboard=True)
+bottom_menu.add(KeyboardButton("/start"))
+bottom_menu.add(KeyboardButton("/help"))
+
 # 📌 Xizmatlar menyusi (1 ustun)
 services_menu = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service")],
@@ -104,6 +109,18 @@ async def handle_message(message: types.Message):
 
     elif message.text == "👨‍💼 Admin bilan bog‘lanish":
         await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
+
+# 📌 /help komandasi
+@dp.message_handler(commands=['help'])
+async def help_command(message: types.Message):
+    await message.answer(
+        "ℹ️ *Botdan foydalanish bo‘yicha yordam:*\n\n"
+        "📌 *Xizmatlar* tugmasini bosib, bizning xizmatlar bilan tanishishingiz mumkin.\n"
+        "👨‍💼 *Admin bilan bog‘lanish* tugmasi orqali administratorga yozishingiz mumkin.\n\n"
+        "Qo‘shimcha savollaringiz bo‘lsa, admin bilan bog‘laning.",
+        reply_markup=services_menu,
+        parse_mode="Markdown"
+    )
 
 # 📌 Inline tugmalar orqali xizmatlarni tanlash
 @dp.callback_query_handler()
