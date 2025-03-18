@@ -80,7 +80,7 @@ async def stars_info(message: types.Message):
     "◾ 150 Stars — 50.000 so'm\n\n"
     "👨‍💻 <i>Admin bilan kelishilgan holda ko‘proq olish mumkin.</i>\n\n"
     "🛒 <b>Sotib olish uchun admin:</b> @Darkness_premium\n\n"
-    "🔷 <i>Qadrdonlaringizga sovg‘a sifatida yuborish mumkin.</i>"
+    "🔷 <i>Qadrdonlaringizga sovg‘a sifatida yuborishingiz mumkin.</i>"
     )
 
     buy_button = InlineKeyboardMarkup().add(
