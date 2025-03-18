@@ -36,7 +36,7 @@ menu_kb.row(
 @dp.message_handler(commands=['start', 'menu'])
 async def send_welcome(message: types.Message):
     await message.answer(
-        "👋 <b>Salom, PremiumHub botiga xush kelibsiz!</b>\n\n"
+        "👋 <b>Salom, Darkness Service botiga xush kelibsiz!</b>\n\n"
         "💎 Bu yerda siz <b>Telegram Premium</b> xizmatini eng qulay narxlarda sotib olishingiz mumkin.\n\n"
         "⚡️ <b>Afzalliklar:</b>\n"
         "✅ Tez va ishonchli to‘lov\n"
