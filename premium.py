@@ -56,9 +56,9 @@ async def premium_info(message: types.Message):
     "◾ 1 oylik — 46.000 so'm\n"
     "◾ 12 oylik — 290.000 so'm\n\n"
     "🎁 <b>Gift sifatida olish:</b>\n"
-    "◾ 3 oy — 170.000 so'm\n"
-    "◾ 6 oy — 220.000 so'm\n"
-    "◾ 12 oy — 400.000 so'm\n\n"
+    "◾ 3 oylik — 170.000 so'm\n"
+    "◾ 6 oylik — 220.000 so'm\n"
+    "◾ 12 oylik — 400.000 so'm\n\n"
     "🔷 <i>Qadrdonlaringizga hadya qilishingiz mumkin.</i>"
     )
     
