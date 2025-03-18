@@ -1,175 +1,144 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-# 🔑 Bot tokeni
-TOKEN = "7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8"
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 
-# 🔹 Admin sahifasi va karta raqami
-ADMIN_URL = "https://t.me/Darkness_premium"
-ADMIN_CARD_NUMBER = "9860 0366 0913 7041"
-ADMIN_ID = 734940228
+API_TOKEN ='7805301069:AAHMZsHBAl1_li5nQF2g4oExMDplCCKpEy8'
 
-# 🔹 Bot va dispatcher yaratish
-bot = Bot(token=TOKEN)
+# Log
+logging.basicConfig(level=logging.INFO)
+
+# Init
+bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-# 📌 Asosiy menyu (2 ta ustunda chiqarish)
-main_menu = types.ReplyKeyboardMarkup(
-    keyboard=[
-        [types.KeyboardButton(text="📌 Xizmatlar"), types.KeyboardButton(text="👨‍💼 Admin bilan bog‘lanish")]
-    ],
-    resize_keyboard=True
+# --- Menu tugmalari ---
+menu_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+
+menu_kb.add(KeyboardButton("🌟 Bepul Premium va Stars olish 🌟"))
+
+menu_kb.row(
+    KeyboardButton("💸 Premium Narxlar"), KeyboardButton("⭐ Stars Narxlari")
 )
 
-# 📌 Xizmatlar menyusi (1 ustun)
-services_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="🚀 Telegram Premium", callback_data="premium_service")],
-    [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data="stars_service")],
-    [InlineKeyboardButton(text="🎮 PUBG UC", callback_data="uc_service")],
-    [InlineKeyboardButton(text="⚽ Efootball", callback_data="efootball_service")]  # Yangi qo‘shildi
-])
+menu_kb.add(KeyboardButton("🏆 TOP Reyting"))
 
-# 📌 Narxlar ro‘yxati
-prices = {
-    "premium": [
-        ("🎁 Telegram Premium", "1 oy", "46,000 so‘m", "price_premium_1month"),
-        ("🎁 Telegram Premium", "3 oy", "170,000 so‘m", "price_premium_3month"),
-        ("🎁 Telegram Premium", "6 oy", "220,000 so‘m", "price_premium_6month"),
-        ("🎁 Telegram Premium", "1 yil", "400,000 so‘m", "price_premium_1year")
-    ],
-    "stars": [
-        ("⭐ Telegram Stars", "50 stars", "15,000 so‘m", "price_stars_50"),
-        ("⭐ Telegram Stars", "100 stars", "30,000 so‘m", "price_stars_100"),
-        ("⭐ Telegram Stars", "500 stars", "115,000 so‘m", "price_stars_500")
-    ],
-    "uc": [
-        ("🎮 PUBG UC", "60 UC", "15,000 so‘m", "price_uc_60"),
-        ("🎮 PUBG UC", "325 UC", "65,000 so‘m", "price_uc_325"),
-        ("🎮 PUBG UC", "660 UC", "125,000 so‘m", "price_uc_660")
-    ],
-    "efootball": [  # ✅ Yangi xizmat qo‘shildi
-        ("⚽ Efootball", "130 coin", "17,000 so‘m", "price_efootball_130"),
-        ("⚽ Efootball", "260 coin ", "34,000 so‘m", "price_efootball_260"),
-        ("⚽ Efootball", "300 coin", "36,000 so‘m", "price_efootball_300"),
-        ("⚽ Efootball", "430 coin", "52,000 so‘m", "price_efootball_430"),
-        ("⚽ Efootball", "550 coin ", "62,000 so‘m", "price_efootball_550"),
-        ("⚽ Efootball", "600 coin", "72,000 so‘m", "price_efootball_600"),
-        ("⚽ Efootball", "750 coin", "81,000 so‘m", "price_efootball_750"),
-        ("⚽ Efootball", "850 coin", "97,000 so‘m", "price_efootball_850"),
-        ("⚽ Efootball", "900 coin", "105,000 so‘m", "price_efootball_900"),
-        ("⚽ Efootball", "1040 coin", "113,000 so‘m", "price_efootball_1040"),
-        ("⚽ Efootball", "1100 coin", "124,000 so‘m", "price_efootball_1100"),
-        ("⚽ Efootball", "1300 coin", "143,000 so‘m", "price_efootball_1300"),
-        ("⚽ Efootball", "1400 coin", "159,000 so‘m", "price_efootball_1400"),
-        ("⚽ Efootball", "1590 coin", "171,000 so‘m", "price_efootball_1590"),
-        ("⚽ Efootball", "1600 coin", "209,000 so‘m", "price_efootball_1600"),
-        ("⚽ Efootball", "2130 coin", "220,000 so‘m", "price_efootball_2130"),
-        ("⚽ Efootball", "3250 coin", "325,000 so‘m", "price_efootball_3250"),
-        ("⚽ Efootball", "5700 coin", "525,000 so‘m", "price_efootball_5700"),
-        ("⚽ Efootball", "12800 coin", "1,157,000 so‘m", "price_efootball_12800"),
-    ]
-}
+menu_kb.row(
+    KeyboardButton("🎁 Bonus olish"), KeyboardButton("💳 Mening Hisobim")
+)
 
-# 📌 Narx callback ma’lumotlarini bog‘lash
-price_buttons = {callback: (service, duration, price) for category in prices.values() for service, duration, price, callback in category}
+menu_kb.row(
+    KeyboardButton("📝 Qo'llanma"), KeyboardButton("👨‍💻 Administrator")
+)
 
-# 📌 Narx tugmalarini yaratish
-def generate_price_buttons(service):
-    buttons = [[InlineKeyboardButton(text=f"{duration} - {price}", callback_data=callback)] for _, duration, price, callback in prices[service]]
-    buttons.append([InlineKeyboardButton(text="⬅️ Orqaga", callback_data="services_menu")])
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
+# /start handler
+@dp.message_handler(commands=['start', 'menu'])
+async def send_welcome(message: types.Message):
+    await message.answer(
+        "👋 <b>Salom, PremiumHub botiga xush kelibsiz!</b>\n\n"
+        "💎 Bu yerda siz <b>Telegram Premium</b> xizmatini eng qulay narxlarda sotib olishingiz mumkin.\n\n"
+        "⚡️ <b>Afzalliklar:</b>\n"
+        "✅ Tez va ishonchli to‘lov\n"
+        "✅ Sovg‘a sifatida yuborish imkoniyati\n"
+        "✅ 100% kafolatlangan aktivatsiya\n\n"
+        "📌 Premium narxlarini ko‘rish uchun menyudan foydalaning.\n\n"
+        "🛒 <b>Buyurtma uchun admin:</b> @Darkness_premium", parse_mode="HTML", reply_markup=menu_kb
+    )
 
-# 📌 Admin bilan bog‘lanish tugmasi
-admin_button = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)]
-])
-
-# 📌 Narx tanlanganda chiqadigan tugma
-def back_to_prices_button(service):
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="👨‍💼 Admin bilan bog‘lanish", url=ADMIN_URL)],
-        [InlineKeyboardButton(text="⬅️ Orqaga", callback_data=f"back_to_{service}")]
-    ])
-
-# 📌 Foydalanuvchilarning xabarlarini qayta ishlash
-@dp.message_handler()
-async def handle_message(message: types.Message):
-    if message.text == "/start":
-        await message.answer("👋 Assalomu alaykum!\n\n📌 Xizmatlarni ko‘rish yoki 👨‍💼 admin bilan bog‘lanish uchun menyudan foydalaning:", reply_markup=main_menu, parse_mode="Markdown")
-
-    elif message.text == "📌 Xizmatlar":
-        await message.answer("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
-
-    elif message.text == "👨‍💼 Admin bilan bog‘lanish":
-        await message.answer("👨‍💼 *Admin bilan bog‘lanish uchun tugmani bosing:*", reply_markup=admin_button, parse_mode="Markdown")
-
-# 📌 Inline tugmalar orqali xizmatlarni tanlash
-@dp.callback_query_handler()
-async def handle_callback(call: CallbackQuery):
-    # 📌 Xizmatlarni ko‘rsatish
-    if call.data == "premium_service":
-        await call.message.edit_text("🚀 *Telegram Premium narxlari:*", reply_markup=generate_price_buttons("premium"), parse_mode="Markdown")
-
-    elif call.data == "stars_service":
-        await call.message.edit_text("⭐ *Telegram Stars narxlari:*", reply_markup=generate_price_buttons("stars"), parse_mode="Markdown")
-
-    elif call.data == "uc_service":
-        await call.message.edit_text("🎮 *PUBG UC narxlari:*", reply_markup=generate_price_buttons("uc"), parse_mode="Markdown")
-
-    elif call.data == "efootball_service":  # ✅ Yangi qo‘shildi
-        await call.message.edit_text("⚽ *Efootball narxlari:*", reply_markup=generate_price_buttons("efootball"), parse_mode="Markdown")
+# 💸 Premium Narxlar
+@dp.message_handler(lambda message: message.text == "💸 Premium Narxlar")
+async def premium_info(message: types.Message):
+    photo = types.InputFile("/storage/emulated/0/Download/premium.jpg")
+    text = (
+    "<b>💸 Telegram Premium Narxlari</b>\n\n"
+    "🔓 <b>Profilga kirish orqali:</b>\n"
+    "◾ 1 oylik — 46.000 so'm\n"
+    "◾ 12 oylik — 290.000 so'm\n\n"
+    "🎁 <b>Gift sifatida olish:</b>\n"
+    "◾ 3 oy — 170.000 so'm\n"
+    "◾ 6 oy — 220.000 so'm\n"
+    "◾ 12 oy — 400.000 so'm\n\n"
+    "🔷 <i>Qadrdonlaringizga hadya qilishingiz mumkin.</i>"
+    )
     
-    elif call.data.startswith("price_"):  
-        selected_service, selected_duration, selected_price = price_buttons.get(call.data, ("Noma’lum xizmat", "Noma’lum miqdor", "Noma’lum narx"))
+    buy_button = InlineKeyboardMarkup().add(
+        InlineKeyboardButton("⭐ Premium sotib olish", url="https://t.me/Darkness_premium")
+    )
 
-        # ✅ Agar Telegram Premium bo'lsa, davomiylik chiqariladi
-        if "Premium" in selected_service:
-            duration_text = f"⏳ *Davomiyligi:* {selected_duration}"
-        else:
-            # ✅ Raqam oldida "Stars", "UC", "Coin" bo‘lmasligi kerak
-            cleaned_duration = ''.join(filter(str.isdigit, selected_duration))  # Faqat raqamlarni ajratib olish
-            duration_text = f"📦 *Miqdori:* {cleaned_duration}"  
+    await bot.send_photo(message.chat.id, photo, caption=text, reply_markup=buy_button, parse_mode="HTML")
 
-        await call.message.edit_text(
-            f"✅ *Siz tanlagan xizmat:* {selected_service}\n"
-            f"{duration_text}\n"
-            f"💰 *Narxi:* {selected_price}\n\n"
-            f"💳 *To‘lov uchun karta raqami:* `{ADMIN_CARD_NUMBER}`\n\n"
-            "📞 *To‘lov qilganingizdan so‘ng adminga to‘lov chekini yuboring va tasdiqlashini kuting!*",
-            reply_markup=back_to_prices_button(call.data.split("_")[1]),
-            parse_mode="Markdown"
-        )
+# ⭐ Stars Narxlari
+@dp.message_handler(lambda message: message.text == "⭐ Stars Narxlari")
+async def stars_info(message: types.Message):
+    photo = types.InputFile("/storage/emulated/0/Download/stars.jpg")
+    text = (
+    "<b>⭐ Telegram Stars Narxlari</b>\n\n"
+    "◾ 50 Stars — 15.000 so'm\n"
+    "◾ 75 Stars — 20.000 so'm\n"
+    "◾ 100 Stars — 30.000 so'm\n"
+    "◾ 150 Stars — 50.000 so'm\n\n"
+    "👨‍💻 <i>Admin bilan kelishilgan holda ko‘proq olish mumkin.</i>\n\n"
+    "🛒 <b>Sotib olish uchun admin:</b> @Darkness_premium\n\n"
+    "🔷 <i>Qadrdonlaringizga sovg‘a sifatida yuborish mumkin.</i>"
+    )
 
-    elif call.data.startswith("back_to_"):
-        service = call.data.split("_")[-1]
+    buy_button = InlineKeyboardMarkup().add(
+        InlineKeyboardButton("⭐ Telegram Stars sotib olish", url="https://t.me/Darkness_premium")
+    )
 
-        service_titles = {
-            "premium": "🚀 *Telegram Premium narxlari:*",
-            "stars": "⭐ *Telegram Stars narxlari:*",
-            "uc": "🎮 *PUBG UC narxlari:*",
-            "efootball": "⚽ *Efootball narxlari:*"  # ✅ Efootball ham qo‘shildi
-        }
+    await bot.send_photo(message.chat.id, photo, caption=text, reply_markup=buy_button, parse_mode="HTML")
 
-        text = service_titles.get(service, "📌 *Xizmat narxlari:*")
+@dp.message_handler(lambda message: message.text == "🌟 Bepul Premium va Stars olish 🌟")
+async def referal_bonus(message: types.Message):
+    referal_link = f"https://t.me/{(await bot.get_me()).username}?start={message.from_user.id}"
+    
+    text = (
+        "<b>🎁 Sizga haligacha Telegram Premium sovg‘a qilishmadimi?</b>\n\n"
+        "➖ <b>Telegram Premium</b> obunani sovg‘a sifatida tekinga olishni istaysizmi?\n\n"
+        "Shunchaki pastdagi havola orqali do‘stlaringizni taklif qiling. Bot o‘zi sizga pul to‘laydi.\n"
+        "To‘plangan pullarga Premium obunasini <b>follashtirish</b> mumkin.\n\n"
+        f"👉 <b>Hoziroq o‘z sovg‘angiz sari olg‘a boring:</b> {referal_link}\n\n"
+        "🔥 Do‘stlaringizni taklif qiling, sovg‘alarni oling!"
+    )
+    
+    photo = types.InputFile("/storage/emulated/0/Download/premium.jpg")
+    
+    share_button = InlineKeyboardMarkup().add(
+        InlineKeyboardButton("📩 Do‘stlarga Ulashish", switch_inline_query=referal_link)
+    )
 
-        await call.message.edit_text(
-            text,
-            reply_markup=generate_price_buttons(service),
-            parse_mode="Markdown"
-        )
+    await message.answer_photo(photo, caption=text, reply_markup=share_button, parse_mode="HTML")
 
-    elif call.data == "services_menu":
-        await call.message.edit_text("📌 *Xizmatlardan birini tanlang:*", reply_markup=services_menu, parse_mode="Markdown")
+# 👨‍💻 Admin
+@dp.message_handler(lambda message: message.text == "👨‍💻 Administrator")
+async def show_admin(message: types.Message):
+    await message.answer("👨‍💻 Admin: @Darkness_premium")
 
-    await call.answer()
+# 🏆 TOP Reyting
+@dp.message_handler(lambda message: message.text == "🏆 TOP Reyting")
+async def top_reyting(message: types.Message):
+    await message.answer("🏆 TOP Reyting: Coming soon...")
 
-# 📌 Botni ishga tushirish
+# 🎁 Bonus olish
+@dp.message_handler(lambda message: message.text == "🎁 Bonus olish")
+async def bonus_info(message: types.Message):
+    await message.answer("🎁 <b>Bonus olish</b>\n\nBonus olish uchun quyidagi shartlarni bajaring:\n1. Do‘stlaringizni taklif qiling\n2. Faol bo‘ling\n3. Admin tavsiyasiga amal qiling.", parse_mode="HTML")
+
+# 💳 Mening Hisobim
+@dp.message_handler(lambda message: message.text == "💳 Mening Hisobim")
+async def show_account(message: types.Message):
+    await message.answer("💳 <b>Sizning hisobingiz</b>\n\n💰 Balans: 0 so'm\n🔓 Faol obuna: Mavjud emas.", parse_mode="HTML")
+
+# 📝 Qo‘llanma
+@dp.message_handler(lambda message: message.text == "📝 Qo'llanma")
+async def show_guide(message: types.Message):
+    await message.answer("📝 <b>Qo‘llanma</b>\n\nBotdan qanday foydalanish bo‘yicha to‘liq ko‘rsatma tez orada joylanadi.", parse_mode="HTML")
+
+# Botni ishga tushirish
 async def main():
     logging.info("Bot ishga tushdi!")
     await dp.start_polling()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
